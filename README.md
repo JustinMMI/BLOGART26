@@ -18,5 +18,5 @@
 - **views** - All your pages
 - 
 
-- Mot de passe comptes de base : 12345678
-- Hash comptes de base a remplacer dans le bdd : $2y$10$gG4LwH6c8IffKi9PnrOXsO8UY9kBahY92PFZAnTUtysKrnZlErzhG
+## Important
+- Pour les besoins de notre projet le mot de passe des comptes de base (12345678) a été modifié pouyr être ash avec ce ash : $2y$10$gG4LwH6c8IffKi9PnrOXsO8UY9kBahY92PFZAnTUtysKrnZlErzhG . La connexion avec les identifiants de base est toujours possible.
