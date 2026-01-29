@@ -20,7 +20,7 @@ if (isset($_GET['numMemb'])) {
         </div>
 
         <div class="col-md-12">
-            <form action="<?php eacho ROOT_URL . '/api/members/delete.php'; ?>" method="post">
+            <form action="<?php echo ROOT_URL . '/api/members/delete.php'; ?>" method="post">
 
                 <input type="hidden" name="numMemb" value="<?= $numMemb ?>">
 
