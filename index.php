@@ -1,10 +1,6 @@
 <?php 
 require_once 'header.php';
-$db = sql_connect();
-
-$sql = "SELECT * FROM article ORDER BY dtCreaArt DESC";
-$request = $db->query($sql);
-$articles = $request->fetchAll();
+sql_connect();
 
 // Article de test (le plus récent)
 $article = sql_select("ARTICLE", "numArt, libTitrArt, libChapoArt, dtCreaArt", null, null, "dtCreaArt DESC", "1");
