@@ -1,6 +1,10 @@
 <?php 
 require_once 'header.php';
-sql_connect();
+$db = sql_connect();
+
+$sql = "SELECT * FROM article ORDER BY dtCreaArt DESC";
+$request = $db->query($sql);
+$articles = $request->fetchAll();
 
 // Article de test (le plus récent)
 $article = sql_select("ARTICLE", "numArt, libTitrArt, libChapoArt, dtCreaArt", null, null, "dtCreaArt DESC", "1");
@@ -28,7 +32,7 @@ $article = $article[0] ?? null;
 
 <script>
 function onSubmit(token) {
-document.getElementById("recaptcha").submit();
-console.log(document.getElementById("recaptcha"));
+    document.getElementById("recaptcha").submit();
+    console.log(document.getElementById("recaptcha"));
 }
 </script>

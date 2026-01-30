@@ -27,3 +27,5 @@ sql_insert(
 header('Location: /views/backend/comments/list.php');
 exit;
 
+
+
