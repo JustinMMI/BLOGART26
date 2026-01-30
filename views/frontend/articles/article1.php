@@ -1,93 +1,79 @@
 <?php
-// 1. Session et Connexion
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
+// On appelle le header (qui démarre la session)
 require_once '../../../header.php';
-$db = sql_connect(); // Récupération de la connexion pour le check manuel du like
 
-// 2. Récupération de l'article
+// Connexion BDD
+$db = sql_connect();
+
+// Récupération de l'article
 $numArt = (int) ($_GET['numArt'] ?? 0);
 $article = null;
 
 if ($numArt > 0) {
-    // On récupère tout (*) pour avoir l'image et le paragraphe s'ils existent
-    $article = sql_select("ARTICLE", "*", "numArt = $numArt");
-    $article = $article[0] ?? null;
+    // On récupère l'article via ta fonction select
+    $data = sql_select("ARTICLE", "*", "numArt = $numArt");
+    $article = $data[0] ?? null;
 }
 
-// 3. Logique du Like
-$numMemb = isset($_SESSION['numMemb']) ? $_SESSION['numMemb'] : null;
+// Logique Like
+$numMemb = $_SESSION['numMemb'] ?? null;
 $userLiked = false;
 
-if ($article && $numMemb) {
-    // Vérifie si le membre a déjà liké cet article
+if ($article && $numMemb && $db) {
     $sqlCheck = "SELECT * FROM `LIKE` WHERE numMemb = '$numMemb' AND numArt = '$numArt'";
     $resultCheck = $db->query($sqlCheck);
-    
     if ($resultCheck && $resultCheck->rowCount() > 0) {
         $userLiked = true;
     }
 }
 ?>
 
-<div class="container mt-5">
+<div class="container mt-4">
     <?php if ($article): ?>
-        
         <h1><?= htmlspecialchars($article['libTitrArt']); ?></h1>
         <p class="text-muted">Publié le <?= htmlspecialchars($article['dtCreaArt']); ?></p>
 
         <?php if (!empty($article['urlPhotArt'])): ?>
-            <div class="text-center mb-4">
-                <img src="../../../src/uploads/<?= htmlspecialchars($article['urlPhotArt']); ?>" 
-                     class="img-fluid rounded" 
-                     alt="Image Article" 
-                     style="max-height: 400px; object-fit: cover;">
-            </div>
+            <img src="../../../src/uploads/<?= htmlspecialchars($article['urlPhotArt']); ?>" class="img-fluid mb-4 rounded" alt="Image Article" style="max-height: 400px; object-fit: cover;">
         <?php endif; ?>
 
-        <div class="article-content mb-4">
-            <p class="fw-bold lead"><?= nl2br(htmlspecialchars($article['libChapoArt'])); ?></p>
+        <div class="content mb-4">
+            <p class="lead fw-bold"><?= nl2br(htmlspecialchars($article['libChapoArt'])); ?></p>
             <hr>
             <?php if (isset($article['parag1Art'])): ?>
                 <p><?= nl2br(htmlspecialchars($article['parag1Art'])); ?></p>
             <?php endif; ?>
         </div>
 
-        <div class="card bg-light mb-5">
-            <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+        <div class="card bg-light p-3 mb-5">
+            <div class="d-flex justify-content-between align-items-center">
                 
-                <div class="like-section">
+                <div>
                     <?php if ($numMemb): ?>
                         <?php if ($userLiked): ?>
                             <form action="../../../api/likes/delete.php" method="POST" style="display:inline;">
                                 <input type="hidden" name="numMemb" value="<?= $numMemb ?>">
                                 <input type="hidden" name="numArt" value="<?= $numArt ?>">
                                 <input type="hidden" name="frontend" value="true">
-                                <button type="submit" class="btn btn-danger">
-                                    ❤️ Je n'aime plus
-                                </button>
+                                <button type="submit" class="btn btn-danger">❤️ Je n'aime plus</button>
                             </form>
                         <?php else: ?>
                             <form action="../../../api/likes/create.php" method="POST" style="display:inline;">
                                 <input type="hidden" name="numMemb" value="<?= $numMemb ?>">
                                 <input type="hidden" name="numArt" value="<?= $numArt ?>">
                                 <input type="hidden" name="frontend" value="true">
-                                <button type="submit" class="btn btn-outline-danger">
-                                    🤍 J'aime cet article
-                                </button>
+                                <button type="submit" class="btn btn-outline-danger">🤍 J'aime cet article</button>
                             </form>
                         <?php endif; ?>
                     <?php else: ?>
-                        <span class="text-muted">Connectez-vous pour aimer</span>
+                        <span><a href="../../security/login.php">Connectez-vous</a> pour aimer cet article</span>
                     <?php endif; ?>
                 </div>
 
-                <div class="comment-section">
-                    <?php if ($numMemb): ?>
+                <div>
+                    <?php if (isset($_SESSION['numMemb'])): ?>
                         <a class="btn btn-primary" href="<?= defined('ROOT_URL') ? ROOT_URL : '../../..' ?>/views/backend/comments/create.php?numArt=<?= (int) $article['numArt']; ?>">
-                            💬 Commenter cet article
+                            💬 Commenter
                         </a>
                     <?php else: ?>
                         <a class="btn btn-secondary" href="<?= defined('ROOT_URL') ? ROOT_URL : '../../..' ?>/views/backend/security/login.php">
@@ -95,19 +81,13 @@ if ($article && $numMemb) {
                         </a>
                     <?php endif; ?>
                 </div>
-
             </div>
         </div>
 
-        <div class="mb-5">
-            <a href="../../../index.php" class="btn btn-dark">← Retour à l'accueil</a>
-        </div>
+        <a href="../../../index.php" class="btn btn-dark">← Retour à l'accueil</a>
 
     <?php else: ?>
-        <div class="alert alert-warning mt-5">Oups, cet article est introuvable ou a été supprimé.</div>
-        <div class="mt-3">
-            <a href="../../../index.php" class="btn btn-primary">Retour à l'accueil</a>
-        </div>
+        <div class="alert alert-warning">Article introuvable.</div>
     <?php endif; ?>
 </div>
 
