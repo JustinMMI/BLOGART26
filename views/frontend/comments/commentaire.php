@@ -8,12 +8,26 @@ if (!isset($_SESSION['user'])) {
 	exit;
 }
 
-// Articles disponibles
-$articles = sql_select("ARTICLE", "numArt, libTitrArt", null, null, "dtCreaArt DESC");
+// Récupération de l'article depuis GET
+$numArt = (int) ($_GET['numArt'] ?? 0);
+
+if ($numArt <= 0) {
+	header('Location: /');
+	exit;
+}
+
+$article = sql_select("ARTICLE", "numArt, libTitrArt", "numArt = $numArt");
+
+if (empty($article)) {
+	header('Location: /');
+	exit;
+}
+
+$article = $article[0];
 
 $error = '';
 if (isset($_GET['error'])) {
-	$error = "Veuillez sélectionner un article et saisir un commentaire.";
+	$error = "Veuillez saisir un commentaire.";
 }
 ?>
 
@@ -29,16 +43,11 @@ if (isset($_GET['error'])) {
 	<?php endif; ?>
 
 	<form action="<?= ROOT_URL . '/api/comments/create.php'; ?>" method="post">
+		<input type="hidden" name="numArt" value="<?= (int) $article['numArt']; ?>">
+		
 		<div class="mb-3">
-			<label for="numArt" class="form-label">Sélectionnez un article</label>
-			<select class="form-select" id="numArt" name="numArt" required>
-				<option value="">-- Choisir un article --</option>
-				<?php foreach ($articles as $article): ?>
-					<option value="<?= (int) $article['numArt']; ?>">
-						<?= htmlspecialchars($article['libTitrArt']); ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
+			<label class="form-label">Article sélectionné</label>
+			<input type="text" class="form-control" value="<?= htmlspecialchars($article['libTitrArt']); ?>" readonly>
 		</div>
 
 		<div class="mb-3">
@@ -52,7 +61,7 @@ if (isset($_GET['error'])) {
 		</div>
 
 		<button class="btn btn-success">Publier le commentaire</button>
-		<a href="list.php" class="btn btn-secondary">Retour à la liste</a>
+		<a href="/views/frontend/articles/article1.php?numArt=<?= (int) $article['numArt']; ?>" class="btn btn-secondary">Retour à l'article</a>
 	</form>
 </div>
 
