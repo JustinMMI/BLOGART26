@@ -24,14 +24,10 @@ function cookie_notice(){
         <script>
         function acceptCookies() {
             document.cookie = "user_cookie_consent=accepted; path=/; max-age=" + (365 * 24 * 60 * 60);
-<<<<<<< Updated upstream
             var banner = document.getElementById("cookie-banner");
             if (banner) {
                 banner.remove();
             }
-=======
-            location.reload();
->>>>>>> Stashed changes
         }
 
         function rejectCookies() {
