@@ -2,9 +2,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . '/config.php';
 require_once '../../functions/ctrlSaisies.php';
 
-/* =========================
-   CHAMPS TEXTE
-========================= */
 $libTitrArt     = addslashes(ctrlSaisies($_POST['libTitrArt']));
 $libChapoArt    = addslashes(ctrlSaisies($_POST['libChapoArt']));
 $libAccrochArt  = addslashes(ctrlSaisies($_POST['libAccrochArt']));
