@@ -8,6 +8,7 @@ function onSubmit(token) {
 <?php
 session_start();
 require_once 'config.php';
+cookie_notice();
 ?>
 
 <!DOCTYPE html>
