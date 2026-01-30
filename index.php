@@ -7,5 +7,11 @@ sql_connect();
 
 
 
-
 <?php require_once 'footer.php'; ?>
+
+<script>
+function onSubmit(token) {
+document.getElementById("recaptcha").submit();
+console.log(document.getElementById("recaptcha"));
+}
+</script>

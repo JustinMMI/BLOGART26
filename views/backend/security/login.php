@@ -1,3 +1,4 @@
+
 <?php
 include '../../../header.php';
 
@@ -59,9 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
     <?php endif; ?>
 
-    <form method="post">
-        <input class="form-control mb-2" name="email" type="email" placeholder="Email" required>
-        <input class="form-control mb-2" name="password" type="password" placeholder="Mot de passe" required>
+    <form id="form-recaptcha" method="post">
+        <button class="g-recaptcha" data-sitekey="6Lcv_losAAAAAGBCPCiH7FwZBeXDoHKPjjQuygZJ" data-callback='onSubmit' data-action='submit'>Submit </button>
+            <input class="form-control mb-2" name="email" type="email" placeholder="Email" required>
+            <input class="form-control mb-2" name="password" type="password" placeholder="Mot de passe" required>
 
         <button class="btn btn-primary mt-2">Connexion</button>
         <a href="signup.php" class="btn btn-secondary mt-2">Créer un compte</a>

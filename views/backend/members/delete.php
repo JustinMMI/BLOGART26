@@ -20,9 +20,9 @@ if (isset($_GET['numMemb'])) {
         </div>
 
         <div class="col-md-12">
-            <form action="<?php echo ROOT_URL . '/api/members/delete.php'; ?>" method="post">
-
-                <input type="hidden" name="numMemb" value="<?= $numMemb ?>">
+            <form id="form-recaptcha" action="<?php echo ROOT_URL . '/api/members/delete.php'; ?>" method="post">
+                <button class="g-recaptcha" data-sitekey="6Lcv_losAAAAAGBCPCiH7FwZBeXDoHKPjjQuygZJ" data-callback='onSubmit' data-action='submit'>Submit </button>
+                    <input type="hidden" name="numMemb" value="<?= $numMemb ?>">
 
                 <div class="form-group">
                     <label>Pseudo</label>

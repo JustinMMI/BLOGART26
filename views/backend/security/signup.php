@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-?>
+
 
 <div class="container mt-5">
     <h2>Inscription</h2>
@@ -50,15 +50,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="alert alert-success"><?= htmlspecialchars($success) ?></div>
     <?php endif; ?>
 
-    <form method="post">
-        <input class="form-control mb-2" name="prenom" placeholder="Prénom" required>
-        <input class="form-control mb-2" name="nom" placeholder="Nom" required>
-        <input class="form-control mb-2" name="pseudo" placeholder="Pseudo" required>
-        <input class="form-control mb-2" name="email" type="email" placeholder="Email" required>
-        <input class="form-control mb-2" name="password" type="password" placeholder="Mot de passe" required>
-        <input class="form-control mb-2" name="confirm" type="password" placeholder="Confirmation" required>
+    <form id="form-recaptcha" method="post">
+        <button class="g-recaptcha" data-sitekey="6Lcv_losAAAAAGBCPCiH7FwZBeXDoHKPjjQuygZJ" data-callback='onSubmit' data-action='submit'>Submit </button>
+            <input class="form-control mb-2" name="prenom" placeholder="Prénom" required>
+            <input class="form-control mb-2" name="nom" placeholder="Nom" required>
+            <input class="form-control mb-2" name="pseudo" placeholder="Pseudo" required>
+            <input class="form-control mb-2" name="email" type="email" placeholder="Email" required>
+            <input class="form-control mb-2" name="password" type="password" placeholder="Mot de passe" required>
+            <input class="form-control mb-2" name="confirm" type="password" placeholder="Confirmation" required>
 
         <button class="btn btn-success mt-2">Créer le compte</button>
         <a href="login.php" class="btn btn-primary mt-2">Connexion</a>
     </form>
 </div>
+
+?>
