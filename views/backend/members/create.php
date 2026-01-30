@@ -8,19 +8,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pseudo = $_POST['pseudoMemb'];
     $prenom = $_POST['prenomMemb'];
     $nom = $_POST['nomMemb'];
-    $passwrd = password_hash($_POST['passMemb'], PASSWORD_DEFAULT); 
+    $passwrd = $_POST['passMemb'];
+    $passwrdConf = $_POST['passMembConfirm']; 
     $email = $_POST['eMailMemb'];
+    $emailConf = $_POST['eMailMembConfirm'];
     $dateCreation = date("Y-m-d-H-i-s"); 
     $dtMajMemb = null;
+
+    
+
+    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        echo "L'adresse email est valide.";
+    } else {
+        echo "L'adresse email n'est pas valide.";
+    }
 
     if (get_ExistPseudo($pseudo) > 0) {
         $error = "Ce pseudo existe déjà!";
     }elseif (strlen($pseudo)<6){
         $error = "Ce pseudo est trop court!";
+    }elseif ($passwrd != $passwrdConf){
+        $error = "Les deux mots de passe ne correspondent pas!";
+    }elseif (strlen($passwrd)<8 || strlen($passwrdConf)<8){
+        $error = "Le mot de passe est trop court !";
     }else {
-        $rq = BDD::get()->prepare(
-            "INSERT INTO MEMBRE (pseudoMemb, prenomMemb, nomMemb, passMemb, eMailMemb, dtCreaMemb) VALUES (:pseudo, :prenom, :nom, :passwrd, :email, :dateCreation)");
-
+        $passwrd = password_hash($_POST['passMemb'], PASSWORD_DEFAULT);
+        $rq = BDD::get()->prepare("INSERT INTO MEMBRE (pseudoMemb, prenomMemb, nomMemb, passMemb, eMailMemb, dtCreaMemb, dtMajMemb) VALUES (:pseudo, :prenom, :nom, :passwrd, :email, :dateCreation, :dtMajMemb)");
         $rq->execute([':pseudo' => $pseudo,':prenom' => $prenom,':nom' => $nom,':passwrd' => $pass,':email' => $email,':dtCreaMemb' => $dateCreation]);
 }
 }
@@ -38,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form action="<?php echo ROOT_URL . '/api/statuts/create.php' ?>" method="post">
                 <div class="form-group">
                     <label for="pseudoMemb">Pseudo (non modifiable)</label>
-                    <input id="pseudoMemb" name="pseudoMemb" class="form-control" minlength="6" maxlength="70" type="text" required />
+                    <input id="pseudoMemb" name="pseudoMemb" class="form-control" maxlength="70" type="text" required />
                     <div id="pseudoMemb" class="form-text">
                     (Entre 6 et 70 car.)
                     </div>
@@ -51,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input id="nomMemb" name="nomMemb" class="form-control" type="text" required />
 
                     <label for="passMemb" class="form-label">Password</label>
-                    <input type="password" id="passMemb" name="passMemb" class="form-control">
+                    <input type="password" id="passMemb" name="passMemb" class="form-control" maxlength="15">
                     <div id="passwordHelpBlock" class="form-text">
                     (Entre 8 et 15 car., au - une majuscule, une minuscule, un chiffre, car. spéciaux acceptés)
                     </div>
@@ -63,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </label>
                     </div>
 
-                    <label for="passMemb" class="form-label">Confirmez password</label>
-                    <input type="password" id="passMembConfirm" name="passMembConfirm" class="form-control">
+                    <label for="passMembConfirm" class="form-label">Confirmez password</label>
+                    <input type="password" id="passMembConfirm" name="passMembConfirm" class="form-control" maxlength="15">
                     <div id="passwordHelpBlock" class="form-text">
                     (Entre 8 et 15 car., au - une majuscule, une minuscule, un chiffre, car. spéciaux acceptés)
                     </div>
