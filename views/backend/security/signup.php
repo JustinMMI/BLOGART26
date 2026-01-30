@@ -5,41 +5,70 @@ $error = '';
 $success = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $prenom  = $_POST['prenom'] ?? '';
-    $nom     = $_POST['nom'] ?? '';
-    $pseudo  = $_POST['pseudo'] ?? '';
-    $email   = $_POST['email'] ?? '';
-    $pass    = $_POST['password'] ?? '';
-    $confirm = $_POST['confirm'] ?? '';
-
-    if ($pass !== $confirm) {
-        $error = "Les mots de passe ne correspondent pas.";
+    // Vérification du captcha
+    if (!isset($_POST['g-recaptcha-response']) || empty($_POST['g-recaptcha-response'])) {
+        $error = "Captcha requis";
     } else {
-        // Vérifier si email existe déjà
-        $exist = sql_select("MEMBRE", "*", "eMailMemb = '$email'");
+        $token = $_POST['g-recaptcha-response'];
+        $url = 'https://www.google.com/recaptcha/api/siteverify';
+        $data = array(
+            'secret' => '6Lcv_losAAAAALgmId0ujnWyFEzApB_LYkdkIALq',
+            'response' => $token
+        );
+        $options = array(
+            'http' => array(
+                'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+                'method' => 'POST',
+                'content' => http_build_query($data)
+            )
+        );
 
-        if (!empty($exist)) {
-            $error = "Un compte avec cet email existe déjà.";
+        $context = stream_context_create($options);
+        $result = file_get_contents($url, false, $context);
+        $response = json_decode($result);
+
+        if (!($response->success && $response->score >= 0.5)) {
+            $error = "Vous êtes peut-être un robot. Captcha échoué.";
+        }
+    }
+
+    if (!$error) {
+        $prenom  = $_POST['prenom'] ?? '';
+        $nom     = $_POST['nom'] ?? '';
+        $pseudo  = $_POST['pseudo'] ?? '';
+        $email   = $_POST['email'] ?? '';
+        $pass    = $_POST['password'] ?? '';
+        $confirm = $_POST['confirm'] ?? '';
+
+        if ($pass !== $confirm) {
+            $error = "Les mots de passe ne correspondent pas.";
         } else {
-            $hash = password_hash($pass, PASSWORD_DEFAULT);
+            // Vérifier si email existe déjà
+            $exist = sql_select("MEMBRE", "*", "eMailMemb = '$email'");
 
-            $statutMembre = sql_select(
-                "STATUT",
-                "numStat",
-                "libStat = 'Membre'"
-            )[0]['numStat'];
+            if (!empty($exist)) {
+                $error = "Un compte avec cet email existe déjà.";
+            } else {
+                $hash = password_hash($pass, PASSWORD_DEFAULT);
 
-            sql_insert(
-                "MEMBRE",
-                "prenomMemb, nomMemb, pseudoMemb, passMemb, eMailMemb, dtCreaMemb, numStat",
-                "'$prenom', '$nom', '$pseudo', '$hash', '$email', NOW(), $statutMembre"
-            );
+                $statutMembre = sql_select(
+                    "STATUT",
+                    "numStat",
+                    "libStat = 'Membre'"
+                )[0]['numStat'];
 
-            $success = "Compte créé avec succès. Vous pouvez vous connecter.";
+                sql_insert(
+                    "MEMBRE",
+                    "prenomMemb, nomMemb, pseudoMemb, passMemb, eMailMemb, dtCreaMemb, numStat",
+                    "'$prenom', '$nom', '$pseudo', '$hash', '$email', NOW(), $statutMembre"
+                );
+
+                $success = "Compte créé avec succès. Vous pouvez vous connecter.";
+            }
         }
     }
 }
-
+?>
 
 <div class="container mt-5">
     <h2>Inscription</h2>
